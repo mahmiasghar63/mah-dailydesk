@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mah-dailydesk"
+version = "0.1.0"
+description = "An offline-first desktop productivity suite built with Python, PySide6 and SQLite."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{name = "MAH"}]
+keywords = ["productivity", "desktop-app", "pyside6", "sqlite", "python"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Operating System :: Microsoft :: Windows",
+  "Environment :: X11 Applications :: Qt",
+  "Intended Audience :: End Users/Desktop",
+]
+dependencies = ["PySide6>=6.8,<7"]
+
+[project.gui-scripts]
+mah-dailydesk = "dailydesk.app:launch"
+
+[tool.setuptools.packages.find]
+include = ["dailydesk*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

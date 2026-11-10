@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# App state and backups (never commit personal data)
+*.sqlite
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+*.db
+*.db-wal
+*.db-shm
+*backup*.zip
+
+# Build output
+build/
+dist/
+*.spec
+
+# IDE & OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini

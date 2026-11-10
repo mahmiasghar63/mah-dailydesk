@@ -1,0 +1,1 @@
+Screenshot previews will be added after Windows GUI verification.
