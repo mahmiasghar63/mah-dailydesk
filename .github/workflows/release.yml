@@ -72,7 +72,7 @@ jobs:
             $required = @('SIGNPATH_API_TOKEN','SIGNPATH_ORG','SIGNPATH_PROJECT','SIGNPATH_POLICY')
           } elseif ($provider -eq 'azure') {
             $required = @('AZURE_CLIENT_ID','AZURE_TENANT_ID','AZURE_SUBSCRIPTION_ID','SIGNING_ENDPOINT','SIGNING_ACCOUNT','SIGNING_PROFILE')
-            if (-not $env:SIGNING_ENDPOINT.StartsWith('https://') -or -not $env:SIGNING_ENDPOINT.Contains('.codesigning.azure.net')) { throw 'Set a valid regional Artifact Signing endpoint.' }
+            if ([string]::IsNullOrWhiteSpace($env:SIGNING_ENDPOINT) -or -not $env:SIGNING_ENDPOINT.StartsWith('https://') -or -not $env:SIGNING_ENDPOINT.Contains('.codesigning.azure.net')) { throw 'Set a valid regional Artifact Signing endpoint.' }
           } else {
             throw 'Unsupported SIGNING_PROVIDER. Choose signpath or azure.'
           }
@@ -146,7 +146,7 @@ jobs:
           endpoint: ${{ vars.SIGNING_ENDPOINT }}
           signing-account-name: ${{ vars.SIGNING_ACCOUNT }}
           certificate-profile-name: ${{ vars.SIGNING_PROFILE }}
-          files: ${{ github.workspace }}\\dist\\MAH-DailyDesk\\MAH-DailyDesk.exe
+          files: ${{ github.workspace }}/dist/MAH-DailyDesk/MAH-DailyDesk.exe
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
