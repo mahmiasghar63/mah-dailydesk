@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/MAH-DailyDesk.svg" alt="MAH DailyDesk logo" width="116" />
+
 # ✦ MAH DailyDesk
 
 **Your everyday productivity command center — beautifully simple, fully offline.**
@@ -7,7 +9,12 @@
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
 ![PySide6](https://img.shields.io/badge/GUI-PySide6-7350CB)
 ![SQLite](https://img.shields.io/badge/Storage-SQLite-16719C)
-![License](https://img.shields.io/badge/License-MIT-57C9A7)
+[![Python checks](https://github.com/mahmiasghar63/mah-dailydesk/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/mahmiasghar63/mah-dailydesk/actions/workflows/tests.yml)
+[![Security checks](https://github.com/mahmiasghar63/mah-dailydesk/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/mahmiasghar63/mah-dailydesk/actions/workflows/security.yml)
+[![MIT License](https://img.shields.io/badge/License-MIT-57C9A7)](LICENSE)
+[![Windows release](https://img.shields.io/badge/Windows-v1.0.0-7775EA)](https://github.com/mahmiasghar63/mah-dailydesk/releases/tag/v1.0.0)
+
+[**Download for Windows**](https://github.com/mahmiasghar63/mah-dailydesk/releases/tag/v1.0.0) · [**Report an issue**](https://github.com/mahmiasghar63/mah-dailydesk/issues) · [**Contribute**](CONTRIBUTING.md)
 
 *Plan the day. Capture ideas. Track habits. Build focus.*
 
@@ -36,13 +43,31 @@ Other interface features: an interactive **Ctrl+K command palette**, keyboard na
 
 ### Interface previews
 
-The Windows release workflow captures genuine Qt screenshots with isolated demo data. View the dashboard, tasks and settings previews among the [latest release assets](https://github.com/mahmiasghar63/mah-dailydesk/releases/latest).
+These are genuine Qt screenshots captured with **disposable demo data** during the Windows v1.0.0 build. Select an image to view it at full size.
 
-<img src="assets/MAH-DailyDesk.svg" alt="MAH DailyDesk logo" width="160" />
+<p align="center">
+  <a href="https://github.com/mahmiasghar63/mah-dailydesk/releases/download/v1.0.0/dashboard.png"><img src="https://github.com/mahmiasghar63/mah-dailydesk/releases/download/v1.0.0/dashboard.png" alt="MAH DailyDesk dashboard screenshot" width="32%" /></a>
+  <a href="https://github.com/mahmiasghar63/mah-dailydesk/releases/download/v1.0.0/tasks.png"><img src="https://github.com/mahmiasghar63/mah-dailydesk/releases/download/v1.0.0/tasks.png" alt="MAH DailyDesk tasks screenshot" width="32%" /></a>
+  <a href="https://github.com/mahmiasghar63/mah-dailydesk/releases/download/v1.0.0/settings.png"><img src="https://github.com/mahmiasghar63/mah-dailydesk/releases/download/v1.0.0/settings.png" alt="MAH DailyDesk settings screenshot" width="32%" /></a>
+</p>
+
+The same screenshots, the application ZIP and its checksum are available on the [v1.0.0 release page](https://github.com/mahmiasghar63/mah-dailydesk/releases/tag/v1.0.0).
 
 ## Download — Windows 10 or 11 (64-bit)
 
+**No Python installation is needed to run the downloadable Windows app.**
+
 For a Windows build that does not require Python, visit [GitHub Releases](https://github.com/mahmiasghar63/mah-dailydesk/releases/latest) and download `MAH-DailyDesk-v1.0.0-Windows-x64.zip`. Extract the entire folder, then run `MAH-DailyDesk.exe` inside. Keep all adjacent bundled files together. This is an **unsigned** binary, so only download from the official repository and verify its SHA-256 checksum if desired. Your data remains in `%LOCALAPPDATA%\MAH-DailyDesk\` between app upgrades.
+
+### Frequently asked questions
+
+**Does the Windows download require Python?** No. Extract the complete ZIP and run the executable inside its folder.
+
+**Does it sync my data online?** No. DailyDesk stores its data locally and has no account or cloud sync.
+
+**Will updating delete my tasks?** The app keeps its data in your user profile, not the installation folder. Still make a backup before any upgrade.
+
+**Does it include an installer or a signed publisher certificate?** No. The published v1.0.0 release is a portable, unsigned ZIP; signing for later releases needs an approved external provider.
 
 ## Quick start from source — Windows 10 or 11
 
@@ -175,9 +200,11 @@ The published **v1.0.0** Windows ZIP is **unsigned**. New releases are configure
 - [ ] Connect an approved code-signing provider and publish a signed Windows release
 - [ ] Signed installer (optional)
 
-## Contributing
+## Contributing and support
 
-Bug reports and pull requests are welcome. Please open an issue describing expected behavior, steps to reproduce and your OS/Python version. Run the tests before submitting code. Don't share database files with personal information.
+Bug reports, improvement ideas and pull requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md) for setup, testing, code style and review guidance. Use [GitHub Issues](https://github.com/mahmiasghar63/mah-dailydesk/issues) for reproducible bugs or feature proposals, but **never post personal databases, private data or vulnerability details in public issues**; see [SECURITY.md](SECURITY.md) for security reporting.
+
+If you are interested in how versions are packaged, see [PUBLISHING.md](PUBLISHING.md). Genuine code signing for later versions requires an approved provider; the configuration and limitations are documented in [CODE_SIGNING.md](CODE_SIGNING.md).
 
 ## License
 
