@@ -5,12 +5,10 @@ on:
     branches: [main]
     paths:
       - 'release/VERSION'
-      - '.github/workflows/release.yml'
-      - 'tools/**'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: mah-dailydesk-release
@@ -20,6 +18,8 @@ jobs:
   windows-release:
     runs-on: windows-latest
     timeout-minutes: 45
+    permissions:
+      contents: write
     env:
       QT_QPA_PLATFORM: offscreen
     steps:
@@ -38,6 +38,14 @@ jobs:
           if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Invalid release/VERSION" }
           "version=$version" >> $env:GITHUB_OUTPUT
           "tag=v$version" >> $env:GITHUB_OUTPUT
+      - name: Refuse to overwrite an existing version tag
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = '${{ steps.version.outputs.tag }}'
+          gh api "repos/$env:GITHUB_REPOSITORY/git/ref/tags/$tag" --silent 2>$null
+          if ($LASTEXITCODE -eq 0) { throw "Release tag $tag already exists. Bump release/VERSION and both application version fields before publishing." }
       - name: Install build dependencies
         run: python -m pip install -r requirements-dev.txt "Pillow>=10,<12"
       - name: Check application version matches release
@@ -87,10 +95,5 @@ jobs:
           $tag = '${{ steps.version.outputs.tag }}'
           $version = '${{ steps.version.outputs.version }}'
           $assets = @("MAH-DailyDesk-v$version-Windows-x64.zip", "SHA256SUMS.txt", "screenshots/dashboard.png", "screenshots/tasks.png", "screenshots/settings.png")
-          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
-          if ($LASTEXITCODE -ne 0) {
-            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "MAH DailyDesk $tag — Windows" --notes-file release/RELEASE_NOTES.md --latest
-            if ($LASTEXITCODE -ne 0) { throw 'Could not create GitHub Release' }
-          }
-          gh release upload $tag @assets --repo $env:GITHUB_REPOSITORY --clobber
-          if ($LASTEXITCODE -ne 0) { throw 'Release asset upload failed' }
+          gh release create $tag @assets --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "MAH DailyDesk $tag — Windows" --notes-file release/RELEASE_NOTES.md --latest
+          if ($LASTEXITCODE -ne 0) { throw 'Could not create GitHub Release' }
