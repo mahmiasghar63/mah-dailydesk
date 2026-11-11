@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'release/VERSION'
+      - '.github/workflows/release.yml'
+      - 'tools/**'
   workflow_dispatch:
 
 permissions:
@@ -50,14 +52,14 @@ jobs:
       - name: Generate Windows icon
         run: python tools/create_icon.py
       - name: Capture real GUI previews (disposable demo data)
-        run: python tools/capture_screenshots.py
+        run: python -m tools.capture_screenshots
       - name: Build standalone Windows application
         shell: pwsh
         run: |
           python -m PyInstaller --noconfirm --clean --onedir --windowed --name MAH-DailyDesk --icon assets/MAH-DailyDesk.ico main.py
           if ($LASTEXITCODE -ne 0) { throw 'PyInstaller failed' }
       - name: Smoke-test packaged executable
-        run: python tools/smoke_frozen.py dist/MAH-DailyDesk/MAH-DailyDesk.exe
+        run: python -m tools.smoke_frozen dist/MAH-DailyDesk/MAH-DailyDesk.exe
       - name: Zip Windows app and hash release file
         shell: pwsh
         run: |
