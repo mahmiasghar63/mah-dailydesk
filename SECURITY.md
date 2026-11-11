@@ -19,4 +19,4 @@ Please use **GitHub's private vulnerability reporting** feature under the reposi
 
 ## Release trust
 
-Releases are currently unsigned. The official Windows ZIP is built by GitHub Actions, published with a SHA-256 checksum, and smoke-tested. Checksum comparison detects mismatched downloads relative to the published checksum but is not a malware scan or publisher identity verification. Never commit code-signing certificates or private keys.
+The published v1.0.0 release is unsigned. Future GitHub Actions releases are configured to require SignPath or Azure verified code signing (external provider connection still pending), signature validation and SHA-256 checksums. They also generate a separate GitHub provenance attestation. Checksum comparison detects mismatched downloads relative to the published checksum but is not a malware scan or publisher identity verification. Never commit code-signing certificates or private keys.
