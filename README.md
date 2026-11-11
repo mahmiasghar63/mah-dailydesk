@@ -157,6 +157,10 @@ After the app runs correctly on Windows, launch **`build_windows.bat`**. It inst
 
 A GitHub Actions workflow on a hosted Windows runner builds the packaged application, runs tests, generates GUI previews, and attaches the ZIP, preview images and SHA-256 checksum to the versioned GitHub Release. The build is only published when the workflow succeeds. See [PUBLISHING.md](PUBLISHING.md).
 
+## Release integrity and security
+
+The Windows ZIP is **unsigned**. Download it only from the [official GitHub release](https://github.com/mahmiasghar63/mah-dailydesk/releases/latest), and compare its SHA-256 hash against the published `SHA256SUMS.txt` using `Get-FileHash -Algorithm SHA256 <downloaded-zip>` in PowerShell. Hash verification checks integrity against the published checksum; it is not a malware certification. Automated dependency checks, source scanning and Dependabot help identify issues but do not guarantee the absence of vulnerabilities. See [SECURITY.md](SECURITY.md) and [PUBLISHING.md](PUBLISHING.md).
+
 ## Roadmap
 
 - [x] Offline storage and essential productivity modules
