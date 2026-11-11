@@ -7,7 +7,7 @@ https://github.com/mahmiasghar63/mah-dailydesk
 
 The `.github/workflows/release.yml` workflow runs on a push to `main` that changes `release/VERSION` (not every source-code push) and can also be started via **Actions → Build and publish Windows release → Run workflow**.
 
-It runs unit and GUI tests on GitHub's hosted Windows runner, generates the app icon, captures authentic GUI screenshots with disposable demo data, builds an unsigned 64-bit PyInstaller onedir bundle, smoke-tests the executable, packages the full app folder, and creates a GitHub Release with checksum and screenshots **only after its build and tests pass**.
+It runs unit and GUI tests on GitHub's hosted Windows runner, generates the app icon, captures authentic GUI screenshots with disposable demo data, builds a 64-bit PyInstaller onedir bundle, smoke-tests the executable, requires verified SignPath Foundation or Azure Artifact Signing, validates its Authenticode signature and timestamp, packages the signed app folder, creates a GitHub build-provenance attestation, and publishes the GitHub Release with checksum and screenshots **only after every check succeeds**. The publisher credentials and service account must be connected before the next release can run. The existing v1.0.0 remains unsigned.
 
 The version in `release/VERSION`, `pyproject.toml` and `dailydesk/__init__.py` must agree. A release is created with the tag `v<version>`. An existing release tag is never overwritten by automation. To ship new binaries, bump the version and create a new tag; rerunning an already-published version intentionally fails to protect release integrity.
 
@@ -34,11 +34,11 @@ GitHub Actions runs core and GUI tests on pushes. The `Security checks` workflow
 
 On Windows 10 or 11 x64, launch `run_windows.bat` to set up Python dependencies, then `build_windows.bat` to create `dist/MAH-DailyDesk/`. Distribute the **complete** directory, not the EXE alone.
 
-The release binary is unsigned. Do not claim Microsoft code signing, antivirus certification, or an installer exists. Do not publish files containing personal notes, tasks, SQLite databases or API keys.
+The existing v1.0.0 release is unsigned. New versions will require a signing provider; the workflow refuses to publish unsigned releases. Do not claim antivirus certification or a signed installer exists. Do not publish files containing personal notes, tasks, SQLite databases or API keys.
 
-## Code signing (not configured)
+## Code signing (integration ready; provider not connected)
 
-The current application is intentionally unsigned. Genuine Windows Authenticode signing requires a trusted certificate and controlled signing credentials (or a trusted managed signing service). No certificate is bundled in this repository, and a self-signed certificate is not a substitute for publisher trust. When a trusted signing identity is available, configure it privately through repository secrets or a managed signing service, then validate signatures in CI. Never commit certificate private keys.
+The build pipeline is configured for **SignPath Foundation** (recommended for eligible open-source projects) or **Azure Artifact Signing** (where available). It enforces signing, verifies the returned executable and timestamp, and generates GitHub provenance attestations for new release ZIPs. **The project still needs an approved external signing provider**, and v1.0.0 is still unsigned. See [CODE_SIGNING.md](CODE_SIGNING.md) for exactly which GitHub secrets and variables to configure. Never commit signing credentials.
 
 ## GitHub repository settings (optional)
 
