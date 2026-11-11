@@ -878,7 +878,7 @@ class SettingsPage(Page):
         self.layout_main.addWidget(data)
         info, il = card()
         il.addWidget(label("About MAH DailyDesk", "sectionTitle"))
-        il.addWidget(label("Version 0.1.0  •  Created with Python, PySide6, and SQLite", "muted"))
+        il.addWidget(label("Version 1.0.0  •  Created with Python, PySide6, and SQLite", "muted"))
         il.addWidget(label("Shortcuts: Ctrl+1 through Ctrl+8 switch sections. Ctrl+N opens a new task.", "mini"))
         self.layout_main.addWidget(info)
         self.layout_main.addStretch()

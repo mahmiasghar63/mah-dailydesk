@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">MAH DailyDesk icon</title><desc id="desc">Midnight square with a geometric violet and cyan M monogram.</desc>
+  <defs><linearGradient id="glass" x2=".95" y2="1"><stop stop-color="#121b42"/><stop offset="1" stop-color="#070d25"/></linearGradient><linearGradient id="glow" x1="0" x2="1"><stop stop-color="#b289ff"/><stop offset="1" stop-color="#66eaf5"/></linearGradient></defs>
+  <rect x="18" y="18" width="476" height="476" rx="116" fill="url(#glass)" stroke="#473b84" stroke-width="4"/>
+  <path d="M95 361V151h56l92 114v90l-92-114v120Z" fill="#b289ff"/>
+  <path d="m196 212 50 53 87-113h61L278 315v44h-56v-95Z" fill="#8b96fc"/>
+  <path d="M332 152h62v209h-62Z" fill="#66eaf5"/>
+  <circle cx="408" cy="104" r="10" fill="#66eaf5"/>
+</svg>

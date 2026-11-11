@@ -1,0 +1,94 @@
+name: Build and publish Windows release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'release/VERSION'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mah-dailydesk-release
+  cancel-in-progress: false
+
+jobs:
+  windows-release:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Python 3.12 x64
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          architecture: x64
+      - name: Read and validate version
+        id: version
+        shell: pwsh
+        run: |
+          $version = (Get-Content release/VERSION -Raw).Trim()
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Invalid release/VERSION" }
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=v$version" >> $env:GITHUB_OUTPUT
+      - name: Install build dependencies
+        run: python -m pip install -r requirements-dev.txt "Pillow>=10,<12"
+      - name: Check application version matches release
+        shell: pwsh
+        run: |
+          $version = python -c 'import dailydesk; print(dailydesk.__version__)'
+          if ($version.Trim() -ne '${{ steps.version.outputs.version }}') { throw 'Package version mismatch' }
+      - name: Run unit and GUI smoke tests
+        run: python -m pytest -q
+      - name: Compile application modules
+        run: python -m compileall -q dailydesk main.py tools
+      - name: Generate Windows icon
+        run: python tools/create_icon.py
+      - name: Capture real GUI previews (disposable demo data)
+        run: python tools/capture_screenshots.py
+      - name: Build standalone Windows application
+        shell: pwsh
+        run: |
+          python -m PyInstaller --noconfirm --clean --onedir --windowed --name MAH-DailyDesk --icon assets/MAH-DailyDesk.ico main.py
+          if ($LASTEXITCODE -ne 0) { throw 'PyInstaller failed' }
+      - name: Smoke-test packaged executable
+        run: python tools/smoke_frozen.py dist/MAH-DailyDesk/MAH-DailyDesk.exe
+      - name: Zip Windows app and hash release file
+        shell: pwsh
+        run: |
+          $version = '${{ steps.version.outputs.version }}'
+          $zip = "MAH-DailyDesk-v$version-Windows-x64.zip"
+          Compress-Archive -Path 'dist/MAH-DailyDesk' -DestinationPath $zip -CompressionLevel Optimal -Force
+          $hash = (Get-FileHash -Algorithm SHA256 $zip).Hash.ToLowerInvariant()
+          "$hash  $zip" | Set-Content -Encoding ascii SHA256SUMS.txt
+      - name: Upload build artifact for debugging
+        uses: actions/upload-artifact@v4
+        with:
+          name: MAH-DailyDesk-Windows-x64
+          path: |
+            MAH-DailyDesk-v${{ steps.version.outputs.version }}-Windows-x64.zip
+            SHA256SUMS.txt
+            screenshots/dashboard.png
+            screenshots/tasks.png
+            screenshots/settings.png
+          retention-days: 30
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $tag = '${{ steps.version.outputs.tag }}'
+          $version = '${{ steps.version.outputs.version }}'
+          $assets = @("MAH-DailyDesk-v$version-Windows-x64.zip", "SHA256SUMS.txt", "screenshots/dashboard.png", "screenshots/tasks.png", "screenshots/settings.png")
+          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "MAH DailyDesk $tag — Windows" --notes-file release/RELEASE_NOTES.md --latest
+            if ($LASTEXITCODE -ne 0) { throw 'Could not create GitHub Release' }
+          }
+          gh release upload $tag @assets --repo $env:GITHUB_REPOSITORY --clobber
+          if ($LASTEXITCODE -ne 0) { throw 'Release asset upload failed' }

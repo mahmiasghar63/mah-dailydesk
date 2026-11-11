@@ -1,40 +1,26 @@
-# Publishing MAH DailyDesk on GitHub
+# Publishing MAH DailyDesk
 
-## Repository settings
+The official source and Windows release live at:
+https://github.com/mahmiasghar63/mah-dailydesk
 
-- **Owner:** `mahmiasghar63`
-- **Repository:** `mah-dailydesk`
-- **Description:** A modern, offline-first Python productivity desktop app with tasks, notes, planner, habits, expense tracking and focus tools.
-- **Visibility:** Public
-- **Branch:** `main`
-- **License:** MIT (included in source)
-- **Topics:** `python`, `pyside6`, `desktop-application`, `productivity`, `task-manager`, `sqlite`, `gui`, `open-source`
-- **Initial README/.gitignore/license on GitHub setup:** leave disabled, because the source already provides these.
+## Automated Windows release
 
-## Create the empty repository
+The `.github/workflows/release.yml` workflow runs on a push to `main` that changes `release/VERSION` and can also be started via **Actions → Build and publish Windows release → Run workflow**.
 
-1. Open https://github.com/new while signed in to the correct account.
-2. Enter the repository details above.
-3. Click **Create repository**.
+It runs unit and GUI tests on GitHub's hosted Windows runner, generates the app icon, captures authentic GUI screenshots with disposable demo data, builds an unsigned 64-bit PyInstaller onedir bundle, smoke-tests the executable, packages the full app folder, and creates a GitHub Release with checksum and screenshots **only after its build and tests pass**.
 
-## Upload all source files using Git for Windows
+The version in `release/VERSION`, `pyproject.toml` and `dailydesk/__init__.py` must agree. A release is created with the tag `v<version>`. A rerun uploads assets to the same release instead of creating another tag.
 
-Open Command Prompt in the **extracted `mah-dailydesk` folder**. Use these commands:
+## Source modifications
 
-```bat
-git init -b main
-git add .
-git commit -m "feat: initial MAH DailyDesk source preview"
-git remote add origin https://github.com/mahmiasghar63/mah-dailydesk.git
-git push -u origin main
-```
+Edit locally, run `python -m pytest -q` and test the GUI. Push changes to `main` to run the normal Python checks. For a future official release, bump the three version locations, update `release/RELEASE_NOTES.md` and `CHANGELOG.md`, and change `release/VERSION` in the same commit.
 
-If Git is not found, install Git for Windows. Sign in to GitHub when your credential manager opens; your GitHub password alone is not a valid command-line Git password.
+## Manual Windows build
 
-## Check the public repository
+On Windows 10 or 11 x64, launch `run_windows.bat` to set up Python dependencies, then `build_windows.bat` to create `dist/MAH-DailyDesk/`. Distribute the **complete** directory, not the EXE alone.
 
-Verify that all source folders, the GitHub Actions workflow, license, README and documentation are present. Check **Actions** for Python test results. Add repository topics through the About settings on GitHub.
+The release binary is unsigned. Do not claim Microsoft code signing, antivirus certification, or an installer exists. Do not publish files containing personal notes, tasks, SQLite databases or API keys.
 
-## Tag a release after testing
+## GitHub repository settings (optional)
 
-Don't claim a stable binary release until the GUI starts successfully and the features work on Windows. After testing, build with `build_windows.bat`, check the entire `dist/MAH-DailyDesk/` folder on a clean machine, and attach a zipped build folder in **Releases** with a clear version and release notes.
+Set description to "A modern, offline-first Python productivity desktop app with tasks, notes, planner, habits, expense tracking and focus tools." Suggested topics: `python`, `pyside6`, `desktop-application`, `productivity`, `task-manager`, `sqlite`, `gui`, `open-source`.

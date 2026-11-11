@@ -17,7 +17,7 @@
 
 MAH DailyDesk is an open-source desktop productivity app, built with **Python**, **PySide6 (Qt)** and **SQLite**. It's designed for students, creators, developers and anyone who wants a practical daily workspace. Your content is saved locally on your machine; no account is required.
 
-> **Release status:** Source preview (`v0.1.0`). Core database features are unit-tested. Please run the GUI smoke test on your own system before distributing a packaged executable.
+> **Release status:** Windows source app confirmed to launch by the project owner. A signed installer is not provided; official portable release assets are built automatically on GitHub Actions after Windows tests pass.
 
 ## Features
 
@@ -36,9 +36,15 @@ Other interface features: an interactive **Ctrl+K command palette**, keyboard na
 
 ### Interface previews
 
-Screenshots will be added after verifying the GUI on Windows. We don't use fake screenshots or claim an untested executable is available.
+The Windows release workflow captures genuine Qt screenshots with isolated demo data. View the dashboard, tasks and settings previews among the [latest release assets](https://github.com/mahmiasghar63/mah-dailydesk/releases/latest) once the release build passes.
 
-## Quick start — Windows 10 or 11
+<img src="assets/MAH-DailyDesk.svg" alt="MAH DailyDesk logo" width="160" />
+
+## Download — Windows 10 or 11 (64-bit)
+
+For a Windows build that does not require Python, visit [GitHub Releases](https://github.com/mahmiasghar63/mah-dailydesk/releases/latest) and download `MAH-DailyDesk-v1.0.0-Windows-x64.zip` when available. Extract the entire folder, then run `MAH-DailyDesk.exe` inside. Keep all adjacent bundled files together. This is an **unsigned** binary, so only download from the official repository and verify its SHA-256 checksum if desired. Your data remains in `%LOCALAPPDATA%\MAH-DailyDesk\` between app upgrades.
+
+## Quick start from source — Windows 10 or 11
 
 **Requirements:** Python 3.11 or newer, internet access for the initial package installation, and Windows 10/11. PySide6 wheel availability depends on the Python version and system architecture.
 
@@ -113,6 +119,10 @@ mah-dailydesk/
 │   └── test_gui.py
 ├── screenshots/
 ├── .github/workflows/tests.yml
+├── .github/workflows/release.yml
+├── tools/                   # Icon generation, screenshots and frozen-app smoke checks
+├── assets/                  # Brand artwork
+├── release/                 # Version and GitHub Release notes
 ├── run_windows.bat
 ├── build_windows.bat
 ├── requirements.txt
@@ -145,7 +155,7 @@ The GitHub Actions workflow runs both the core tests and a headless Qt GUI smoke
 
 After the app runs correctly on Windows, launch **`build_windows.bat`**. It installs PyInstaller and creates an *onedir* bundle in `dist\MAH-DailyDesk\`. Distribute the complete folder, not only the `.exe`.
 
-This repository includes **source and build instructions**, not a prebuilt Windows binary. Build, test, then publish the generated app as a GitHub Release if desired.
+A GitHub Actions workflow on a hosted Windows runner builds the packaged application, runs tests, generates GUI previews, and attaches the ZIP, preview images and SHA-256 checksum to the versioned GitHub Release. The build is only published when the workflow succeeds. See [PUBLISHING.md](PUBLISHING.md).
 
 ## Roadmap
 
@@ -153,9 +163,10 @@ This repository includes **source and build instructions**, not a prebuilt Windo
 - [x] Dark and light interface, accents, searchable notes
 - [x] Global quick-launch palette and calendar-based planning
 - [x] Automated core unit tests
-- [ ] Verify GUI on Windows and add real screenshots
+- [x] Windows source launch verified by owner; automated demo screenshots included in the release pipeline
 - [ ] Accessibility and screen-reader review
 - [ ] Optional secure data import / restore workflow
+- [x] Automated unsigned Windows ZIP release pipeline
 - [ ] Signed Windows release / installer
 
 ## Contributing

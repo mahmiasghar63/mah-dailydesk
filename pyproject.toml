@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mah-dailydesk"
-version = "0.1.0"
+version = "1.0.0"
 description = "An offline-first desktop productivity suite built with Python, PySide6 and SQLite."
 readme = "README.md"
 requires-python = ">=3.11"
