@@ -23,6 +23,7 @@ jobs:
       contents: write
       id-token: write
       attestations: write
+      actions: read
     env:
       QT_QPA_PLATFORM: offscreen
     steps:
@@ -49,9 +50,15 @@ jobs:
           $tag = '${{ steps.version.outputs.tag }}'
           gh api "repos/$env:GITHUB_REPOSITORY/git/ref/tags/$tag" --silent 2>$null
           if ($LASTEXITCODE -eq 0) { throw "Release tag $tag already exists. Bump release/VERSION and both application version fields before publishing." }
-      - name: Require verified signing identity (fail closed)
+      - name: Require a verified signing provider (fail closed)
+        id: signing
         shell: pwsh
         env:
+          SIGNING_PROVIDER: ${{ vars.SIGNING_PROVIDER }}
+          SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+          SIGNPATH_ORG: ${{ vars.SIGNPATH_ORG }}
+          SIGNPATH_PROJECT: ${{ vars.SIGNPATH_PROJECT }}
+          SIGNPATH_POLICY: ${{ vars.SIGNPATH_POLICY }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -59,12 +66,22 @@ jobs:
           SIGNING_ACCOUNT: ${{ vars.SIGNING_ACCOUNT }}
           SIGNING_PROFILE: ${{ vars.SIGNING_PROFILE }}
         run: |
-          $required = @('AZURE_CLIENT_ID','AZURE_TENANT_ID','AZURE_SUBSCRIPTION_ID','SIGNING_ENDPOINT','SIGNING_ACCOUNT','SIGNING_PROFILE')
+          $provider = $env:SIGNING_PROVIDER.Trim().ToLowerInvariant()
+          if ([string]::IsNullOrWhiteSpace($provider)) { $provider = 'signpath' }
+          if ($provider -eq 'signpath') {
+            $required = @('SIGNPATH_API_TOKEN','SIGNPATH_ORG','SIGNPATH_PROJECT','SIGNPATH_POLICY')
+          } elseif ($provider -eq 'azure') {
+            $required = @('AZURE_CLIENT_ID','AZURE_TENANT_ID','AZURE_SUBSCRIPTION_ID','SIGNING_ENDPOINT','SIGNING_ACCOUNT','SIGNING_PROFILE')
+            if (-not $env:SIGNING_ENDPOINT.StartsWith('https://') -or -not $env:SIGNING_ENDPOINT.Contains('.codesigning.azure.net')) { throw 'Set a valid regional Artifact Signing endpoint.' }
+          } else {
+            throw 'Unsupported SIGNING_PROVIDER. Choose signpath or azure.'
+          }
           $missing = @($required | Where-Object { [string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($_)) })
           if ($missing.Count -gt 0) {
-            throw "Authenticode signing is REQUIRED for new releases. Configure the verified signing service first. Missing GitHub settings: $($missing -join ', '). See CODE_SIGNING.md."
+            throw "A verified Authenticode signature is REQUIRED for new releases. Configure $provider before publishing. Missing: $($missing -join ', '). See CODE_SIGNING.md."
           }
-          if ($env:SIGNING_ENDPOINT -notmatch '^https://[a-z0-9-]+\.codesigning\.azure\.net/?
+          "provider=$provider" >> $env:GITHUB_OUTPUT
+      - name: Install build dependencies
         run: python -m pip install -r requirements-dev.txt "Pillow>=10,<12"
       - name: Check application version matches release
         shell: pwsh
