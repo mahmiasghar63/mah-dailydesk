@@ -17,7 +17,7 @@
 
 MAH DailyDesk is an open-source desktop productivity app, built with **Python**, **PySide6 (Qt)** and **SQLite**. It's designed for students, creators, developers and anyone who wants a practical daily workspace. Your content is saved locally on your machine; no account is required.
 
-> **Release status:** Windows source app confirmed to launch by the project owner. A signed installer is not provided; official portable release assets are built automatically on GitHub Actions after Windows tests pass.
+> **Release status:** The Windows v1.0.0 portable ZIP is published and **unsigned**. Future versioned releases are now gated on a verified code-signing provider and Authenticode signature verification. See [CODE_SIGNING.md](CODE_SIGNING.md) for provider setup. No installer is supplied.
 
 ## Features
 
@@ -36,13 +36,13 @@ Other interface features: an interactive **Ctrl+K command palette**, keyboard na
 
 ### Interface previews
 
-The Windows release workflow captures genuine Qt screenshots with isolated demo data. View the dashboard, tasks and settings previews among the [latest release assets](https://github.com/mahmiasghar63/mah-dailydesk/releases/latest) once the release build passes.
+The Windows release workflow captures genuine Qt screenshots with isolated demo data. View the dashboard, tasks and settings previews among the [latest release assets](https://github.com/mahmiasghar63/mah-dailydesk/releases/latest).
 
 <img src="assets/MAH-DailyDesk.svg" alt="MAH DailyDesk logo" width="160" />
 
 ## Download — Windows 10 or 11 (64-bit)
 
-For a Windows build that does not require Python, visit [GitHub Releases](https://github.com/mahmiasghar63/mah-dailydesk/releases/latest) and download `MAH-DailyDesk-v1.0.0-Windows-x64.zip` when available. Extract the entire folder, then run `MAH-DailyDesk.exe` inside. Keep all adjacent bundled files together. This is an **unsigned** binary, so only download from the official repository and verify its SHA-256 checksum if desired. Your data remains in `%LOCALAPPDATA%\MAH-DailyDesk\` between app upgrades.
+For a Windows build that does not require Python, visit [GitHub Releases](https://github.com/mahmiasghar63/mah-dailydesk/releases/latest) and download `MAH-DailyDesk-v1.0.0-Windows-x64.zip`. Extract the entire folder, then run `MAH-DailyDesk.exe` inside. Keep all adjacent bundled files together. This is an **unsigned** binary, so only download from the official repository and verify its SHA-256 checksum if desired. Your data remains in `%LOCALAPPDATA%\MAH-DailyDesk\` between app upgrades.
 
 ## Quick start from source — Windows 10 or 11
 
@@ -155,11 +155,11 @@ The GitHub Actions workflow runs both the core tests and a headless Qt GUI smoke
 
 After the app runs correctly on Windows, launch **`build_windows.bat`**. It installs PyInstaller and creates an *onedir* bundle in `dist\MAH-DailyDesk\`. Distribute the complete folder, not only the `.exe`.
 
-A GitHub Actions workflow on a hosted Windows runner builds the packaged application, runs tests, generates GUI previews, and attaches the ZIP, preview images and SHA-256 checksum to the versioned GitHub Release. The build is only published when the workflow succeeds. See [PUBLISHING.md](PUBLISHING.md).
+A GitHub Actions workflow on a hosted Windows runner builds the packaged application, runs tests, generates GUI previews, and for future versions **requires a verified signing provider** before it will publish the ZIP, preview images and SHA-256 checksum. New release ZIPs also receive GitHub provenance attestations. See [PUBLISHING.md](PUBLISHING.md) and [CODE_SIGNING.md](CODE_SIGNING.md).
 
 ## Release integrity and security
 
-The Windows ZIP is **unsigned**. Download it only from the [official GitHub release](https://github.com/mahmiasghar63/mah-dailydesk/releases/latest), and compare its SHA-256 hash against the published `SHA256SUMS.txt` using `Get-FileHash -Algorithm SHA256 <downloaded-zip>` in PowerShell. Hash verification checks integrity against the published checksum; it is not a malware certification. Automated dependency checks, source scanning and Dependabot help identify issues but do not guarantee the absence of vulnerabilities. See [SECURITY.md](SECURITY.md) and [PUBLISHING.md](PUBLISHING.md).
+The published **v1.0.0** Windows ZIP is **unsigned**. New releases are configured to require verified signing and checks, but no external signing provider has been connected yet. Download it only from the [official GitHub release](https://github.com/mahmiasghar63/mah-dailydesk/releases/latest), and compare its SHA-256 hash against the published `SHA256SUMS.txt` using `Get-FileHash -Algorithm SHA256 <downloaded-zip>` in PowerShell. Hash verification checks integrity against the published checksum; it is not a malware certification. Automated dependency checks, source scanning and Dependabot help identify issues but do not guarantee the absence of vulnerabilities. See [SECURITY.md](SECURITY.md) and [PUBLISHING.md](PUBLISHING.md).
 
 ## Roadmap
 
@@ -171,7 +171,9 @@ The Windows ZIP is **unsigned**. Download it only from the [official GitHub rele
 - [ ] Accessibility and screen-reader review
 - [ ] Optional secure data import / restore workflow
 - [x] Automated unsigned Windows ZIP release pipeline
-- [ ] Signed Windows release / installer
+- [x] Verified-signature requirement and signed-release pipeline integration (provider setup pending)
+- [ ] Connect an approved code-signing provider and publish a signed Windows release
+- [ ] Signed installer (optional)
 
 ## Contributing
 
