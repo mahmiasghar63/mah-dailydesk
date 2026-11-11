@@ -103,13 +103,44 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'PyInstaller failed' }
       - name: Smoke-test packaged executable
         run: python -m tools.smoke_frozen dist/MAH-DailyDesk/MAH-DailyDesk.exe
+      - name: Stage unsigned EXE for SignPath origin verification
+        id: signpath-unsigned
+        if: steps.signing.outputs.provider == 'signpath'
+        uses: actions/upload-artifact@v4
+        with:
+          name: signpath-unsigned-exe-${{ github.run_id }}
+          path: dist/MAH-DailyDesk/MAH-DailyDesk.exe
+          if-no-files-found: error
+          retention-days: 1
+      - name: Sign EXE via approved SignPath project
+        if: steps.signing.outputs.provider == 'signpath'
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORG }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT }}
+          signing-policy-slug: ${{ vars.SIGNPATH_POLICY }}
+          artifact-configuration-slug: ${{ vars.SIGNPATH_ARTIFACT_CONFIG }}
+          github-artifact-id: ${{ steps.signpath-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 3600
+          output-artifact-directory: ${{ runner.temp }}/signpath-signed
+      - name: Install SignPath-signed EXE
+        if: steps.signing.outputs.provider == 'signpath'
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem -LiteralPath "$env:RUNNER_TEMP/signpath-signed" -Recurse -Filter "MAH-DailyDesk.exe" -File)
+          if ($files.Count -ne 1) { throw "Expected exactly one signed MAH-DailyDesk.exe, got $($files.Count)." }
+          Copy-Item -LiteralPath $files[0].FullName -Destination 'dist/MAH-DailyDesk/MAH-DailyDesk.exe' -Force
       - name: Authenticate to Azure with short-lived OIDC credentials
+        if: steps.signing.outputs.provider == 'azure'
         uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Sign EXE using verified Azure Artifact Signing identity
+        if: steps.signing.outputs.provider == 'azure'
         uses: azure/artifact-signing-action@v2
         with:
           endpoint: ${{ vars.SIGNING_ENDPOINT }}
